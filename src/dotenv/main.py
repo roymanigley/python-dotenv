@@ -40,7 +40,7 @@ class DotEnv:
         encoding: Optional[str] = None,
         interpolate: bool = True,
         override: bool = True,
-        secret_key: str = None
+        secret_key: Optional[str] = None
     ) -> None:
         self.dotenv_path: Optional[StrPath] = dotenv_path
         self.stream: Optional[IO[str]] = stream
@@ -158,7 +158,7 @@ def set_key(
     quote_mode: str = "always",
     export: bool = False,
     encoding: Optional[str] = "utf-8",
-    secret_key: str = None,
+    secret_key: Optional[str] = None,
 ) -> Tuple[Optional[bool], str, str]:
     """
     Adds or Updates a key/value to the given .env
@@ -205,7 +205,7 @@ def unset_key(
     key_to_unset: str,
     quote_mode: str = "always",
     encoding: Optional[str] = "utf-8",
-    secret_key: str = None
+    secret_key: Optional[str] = None
 ) -> Tuple[Optional[bool], str]:
     """
     Removes a given key from the given `.env` file.

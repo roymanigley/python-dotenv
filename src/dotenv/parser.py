@@ -120,7 +120,7 @@ def parse_unquoted_value(reader: Reader) -> str:
     return re.sub(r"\s+#.*", "", part).rstrip()
 
 
-def parse_value(reader: Reader, secret_key: str) -> str:
+def parse_value(reader: Reader, secret_key: Optional[str]) -> str:
     char = reader.peek(1)
     if char == u"'":
         (value,) = reader.read_regex(_single_quoted_value)
@@ -138,7 +138,7 @@ def parse_value(reader: Reader, secret_key: str) -> str:
     return value
 
 
-def parse_binding(reader: Reader, secret_key: str = None) -> Binding:
+def parse_binding(reader: Reader, secret_key: Optional[str] = None) -> Binding:
     reader.set_mark()
     try:
         reader.read_regex(_multiline_whitespace)
@@ -174,13 +174,12 @@ def parse_binding(reader: Reader, secret_key: str = None) -> Binding:
             error=True,
         )
 
-def parse_secret_value(value: str) -> str:
 
+def parse_secret_value(value: str) -> str:
     return value
 
 
-
-def parse_stream(stream: IO[str], secret_key: str = None) -> Iterator[Binding]:
+def parse_stream(stream: IO[str], secret_key: Optional[str] = None) -> Iterator[Binding]:
     reader = Reader(stream)
     while reader.has_next():
         yield parse_binding(reader, secret_key)
