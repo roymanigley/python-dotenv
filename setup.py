@@ -16,7 +16,7 @@ with open("./src/dotenv/version.py", encoding="utf-8") as f:
     exec(f.read(), meta)
 
 setup(
-    name="python-dotenv",
+    name="royman-dotenv",
     description="Read key-value pairs from a .env file and set them as environment variables",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -39,9 +39,13 @@ setup(
         "dotenv": ["py.typed"],
     },
     python_requires=">=3.9",
+    install_requires=[
+        "cryptography>=44.0.2",  # Example dependency
+    ],
     extras_require={
         "cli": [
             "click>=5.0",
+            "cryptography==44.0.2",
         ],
     },
     entry_points={

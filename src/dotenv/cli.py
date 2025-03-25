@@ -10,8 +10,8 @@ from .crypt import Crypt
 try:
     import click
 except ImportError:
-    sys.stderr.write('It seems python-dotenv is not installed with cli option. \n'
-                     'Run pip install "python-dotenv[cli]" to fix this.')
+    sys.stderr.write('It seems royman-dotenv is not installed with cli option. \n'
+                     'Run pip install "royman-dotenv[cli]" to fix this.')
     sys.exit(1)
 
 from .main import dotenv_values, set_key, unset_key
