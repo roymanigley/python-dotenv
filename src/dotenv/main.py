@@ -40,6 +40,7 @@ class DotEnv:
         encoding: Optional[str] = None,
         interpolate: bool = True,
         override: bool = True,
+        secret_key: str = None
     ) -> None:
         self.dotenv_path: Optional[StrPath] = dotenv_path
         self.stream: Optional[IO[str]] = stream
@@ -48,6 +49,7 @@ class DotEnv:
         self.encoding: Optional[str] = encoding
         self.interpolate: bool = interpolate
         self.override: bool = override
+        self.secret_key = secret_key
 
     @contextmanager
     def _get_stream(self) -> Iterator[IO[str]]:
@@ -82,7 +84,7 @@ class DotEnv:
 
     def parse(self) -> Iterator[Tuple[str, Optional[str]]]:
         with self._get_stream() as stream:
-            for mapping in with_warn_for_invalid_lines(parse_stream(stream)):
+            for mapping in with_warn_for_invalid_lines(parse_stream(stream, self.secret_key)):
                 if mapping.key is not None:
                     yield mapping.key, mapping.value
 
@@ -156,6 +158,7 @@ def set_key(
     quote_mode: str = "always",
     export: bool = False,
     encoding: Optional[str] = "utf-8",
+    secret_key: str = None,
 ) -> Tuple[Optional[bool], str, str]:
     """
     Adds or Updates a key/value to the given .env
@@ -182,7 +185,7 @@ def set_key(
     with rewrite(dotenv_path, encoding=encoding) as (source, dest):
         replaced = False
         missing_newline = False
-        for mapping in with_warn_for_invalid_lines(parse_stream(source)):
+        for mapping in with_warn_for_invalid_lines(parse_stream(source, secret_key)):
             if mapping.key == key_to_set:
                 dest.write(line_out)
                 replaced = True
@@ -202,6 +205,7 @@ def unset_key(
     key_to_unset: str,
     quote_mode: str = "always",
     encoding: Optional[str] = "utf-8",
+    secret_key: str = None
 ) -> Tuple[Optional[bool], str]:
     """
     Removes a given key from the given `.env` file.
@@ -215,7 +219,7 @@ def unset_key(
 
     removed = False
     with rewrite(dotenv_path, encoding=encoding) as (source, dest):
-        for mapping in with_warn_for_invalid_lines(parse_stream(source)):
+        for mapping in with_warn_for_invalid_lines(parse_stream(source, secret_key)):
             if mapping.key == key_to_unset:
                 removed = True
             else:
@@ -329,6 +333,7 @@ def load_dotenv(
     override: bool = False,
     interpolate: bool = True,
     encoding: Optional[str] = "utf-8",
+    secret_key: Optional[str] = os.environ.get('DOTENV_SECRET'),
 ) -> bool:
     """Parse a .env file and then load all the variables found as environment variables.
 
@@ -358,6 +363,7 @@ def load_dotenv(
         interpolate=interpolate,
         override=override,
         encoding=encoding,
+        secret_key=secret_key
     )
     return dotenv.set_as_environment_variables()
 
@@ -368,6 +374,7 @@ def dotenv_values(
     verbose: bool = False,
     interpolate: bool = True,
     encoding: Optional[str] = "utf-8",
+    secret_key: Optional[str] = None
 ) -> Dict[str, Optional[str]]:
     """
     Parse a .env file and return its content as a dict.
@@ -395,4 +402,5 @@ def dotenv_values(
         interpolate=interpolate,
         override=True,
         encoding=encoding,
+        secret_key=secret_key
     ).dict()

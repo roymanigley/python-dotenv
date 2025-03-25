@@ -5,6 +5,8 @@ import sys
 from contextlib import contextmanager
 from typing import Any, Dict, IO, Iterator, List, Optional
 
+from .crypt import Crypt
+
 try:
     import click
 except ImportError:
@@ -161,6 +163,24 @@ def run(ctx: click.Context, override: bool, commandline: List[str]) -> None:
         click.echo('No command given.')
         exit(1)
     run_command(commandline, dotenv_as_dict)
+
+
+@cli.command(context_settings={'ignore_unknown_options': True})
+def get_secret_key() -> None:
+    try:
+        click.echo(Crypt.generate_key())
+    except Exception as e:
+        click.echo(f'Failed: {e}', err=True)
+
+
+@cli.command(context_settings={'ignore_unknown_options': True})
+@click.argument('value', type=str)
+@click.argument('secret_key', type=str)
+def encrypt(value: str, secret_key: str) -> None:
+    try:
+        click.echo(Crypt.encrypt_value(value, secret_key))
+    except Exception as e:
+        click.echo(f'Failed: {e}', err=True)
 
 
 def run_command(command: List[str], env: Dict[str, str]) -> None:

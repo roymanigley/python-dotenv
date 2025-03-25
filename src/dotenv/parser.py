@@ -3,6 +3,8 @@ import re
 from typing import (IO, Iterator, Match, NamedTuple, Optional,  # noqa:F401
                     Pattern, Sequence, Tuple)
 
+from dotenv.crypt import Crypt
+
 
 def make_regex(string: str, extra_flags: int = 0) -> Pattern[str]:
     return re.compile(string, re.UNICODE | extra_flags)
@@ -118,21 +120,25 @@ def parse_unquoted_value(reader: Reader) -> str:
     return re.sub(r"\s+#.*", "", part).rstrip()
 
 
-def parse_value(reader: Reader) -> str:
+def parse_value(reader: Reader, secret_key: str) -> str:
     char = reader.peek(1)
     if char == u"'":
         (value,) = reader.read_regex(_single_quoted_value)
-        return decode_escapes(_single_quote_escapes, value)
+        value = decode_escapes(_single_quote_escapes, value)
     elif char == u'"':
         (value,) = reader.read_regex(_double_quoted_value)
-        return decode_escapes(_double_quote_escapes, value)
+        value = decode_escapes(_double_quote_escapes, value)
     elif char in (u"", u"\n", u"\r"):
-        return u""
+        value = u""
     else:
-        return parse_unquoted_value(reader)
+        value = parse_unquoted_value(reader)
+
+    if Crypt.is_encrypted_value(value):
+        return Crypt.decrypt_value(value, secret_key)
+    return value
 
 
-def parse_binding(reader: Reader) -> Binding:
+def parse_binding(reader: Reader, secret_key: str = None) -> Binding:
     reader.set_mark()
     try:
         reader.read_regex(_multiline_whitespace)
@@ -148,7 +154,7 @@ def parse_binding(reader: Reader) -> Binding:
         reader.read_regex(_whitespace)
         if reader.peek(1) == "=":
             reader.read_regex(_equal_sign)
-            value: Optional[str] = parse_value(reader)
+            value: Optional[str] = parse_value(reader, secret_key)
         else:
             value = None
         reader.read_regex(_comment)
@@ -168,8 +174,13 @@ def parse_binding(reader: Reader) -> Binding:
             error=True,
         )
 
+def parse_secret_value(value: str) -> str:
 
-def parse_stream(stream: IO[str]) -> Iterator[Binding]:
+    return value
+
+
+
+def parse_stream(stream: IO[str], secret_key: str = None) -> Iterator[Binding]:
     reader = Reader(stream)
     while reader.has_next():
-        yield parse_binding(reader)
+        yield parse_binding(reader, secret_key)
