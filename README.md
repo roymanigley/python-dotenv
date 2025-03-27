@@ -1,9 +1,9 @@
-# python-dotenv
+# royman-dotenv
 
 [![Build Status][build_status_badge]][build_status_link]
 [![PyPI version][pypi_badge]][pypi_link]
 
-python-dotenv reads key-value pairs from a `.env` file and can set them as environment
+royman-dotenv reads key-value pairs from a `.env` file and can set them as environment
 variables. It helps in the development of applications following the
 [12-factor](https://12factor.net/) principles.
 
@@ -22,14 +22,14 @@ variables. It helps in the development of applications following the
 ## Getting Started
 
 ```shell
-pip install python-dotenv
+pip install royman-dotenv
 ```
 
 If your application takes its configuration from environment variables, like a 12-factor
 application, launching it in development is not very practical because you have to set
 those environment variables yourself.
 
-To help you with that, you can add python-dotenv to your application to make it load the
+To help you with that, you can add royman-dotenv to your application to make it load the
 configuration from a `.env` file when it is present (e.g. in development) while remaining
 configurable via the environment:
 
@@ -53,7 +53,7 @@ project:
 └── foo.py
 ```
 
-The syntax of `.env` files supported by python-dotenv is similar to that of Bash:
+The syntax of `.env` files supported by royman-dotenv is similar to that of Bash:
 
 ```bash
 # Development settings
@@ -140,7 +140,7 @@ A CLI interface `dotenv` is also included, which helps you manipulate the `.env`
 without manually opening it.
 
 ```shell
-$ pip install "python-dotenv[cli]"
+$ pip install "royman-dotenv[cli]"
 $ dotenv set USER foo
 $ dotenv set EMAIL foo@example.org
 $ dotenv list
@@ -201,7 +201,7 @@ empty string.
 
 ### Variable expansion
 
-python-dotenv can interpolate variables using POSIX variable expansion.
+royman-dotenv can interpolate variables using POSIX variable expansion.
 
 With `load_dotenv(override=True)` or `dotenv_values()`, the value of a variable is the
 first of the values defined in the following list:
@@ -238,10 +238,10 @@ defined in the following list:
 This project is currently maintained by [Saurabh Kumar](https://saurabh-kumar.com) and
 [Bertrand Bonnefoy-Claudet](https://github.com/bbc2) and would not have been possible
 without the support of these [awesome
-people](https://github.com/theskumar/python-dotenv/graphs/contributors).
+people](https://github.com/roymanigley/royman-dotenv/graphs/contributors).
 
-[build_status_badge]: https://github.com/theskumar/python-dotenv/actions/workflows/test.yml/badge.svg
-[build_status_link]: https://github.com/theskumar/python-dotenv/actions/workflows/test.yml
-[pypi_badge]: https://badge.fury.io/py/python-dotenv.svg
-[pypi_link]: https://badge.fury.io/py/python-dotenv
+[build_status_badge]: https://github.com/roymanigley/royman-dotenv/actions/workflows/test.yml/badge.svg
+[build_status_link]: https://github.com/roymanigley/royman-dotenv/actions/workflows/test.yml
+[pypi_badge]: https://badge.fury.io/py/royman-dotenv.svg
+[pypi_link]: https://badge.fury.io/py/royman-dotenv
 [python_streams]: https://docs.python.org/3/library/io.html
